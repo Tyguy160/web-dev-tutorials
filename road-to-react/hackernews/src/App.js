@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import axios from "axios";
+import logo from "./logo.svg";
+import "./App.css";
 
-const DEFAULT_QUERY = 'redux';
-const DEFAULT_HPP = '100';
-const PATH_BASE = 'https://hn.algolia.com/api/v1';
-const PATH_SEARCH = '/search';
-const PARAM_SEARCH = 'query=';
-const PARAM_PAGE = 'page=';
-const PARAM_HPP = 'hitsPerPage=';
+const DEFAULT_QUERY = "redux";
+const DEFAULT_HPP = "100";
+const PATH_BASE = "https://hn.algolia.com/api/v1";
+const PATH_SEARCH = "/search";
+const PARAM_SEARCH = "query=";
+const PARAM_PAGE = "page=";
+const PARAM_HPP = "hitsPerPage=";
 
 const isSearched = searchTerm => item =>
   item.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -20,9 +20,9 @@ class App extends Component {
     super(props);
     this.state = {
       results: null,
-      searchKey: '',
+      searchKey: "",
       searchTerm: DEFAULT_QUERY,
-      error: null,
+      error: null
     };
     this.needstoSearchTopStories = this.needstoSearchTopStories.bind(this);
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
@@ -43,8 +43,8 @@ class App extends Component {
     this.setState({
       results: {
         ...results,
-        [searchKey]: { hits: updatedHits, page },
-      },
+        [searchKey]: { hits: updatedHits, page }
+      }
     });
   }
   onDismiss(id) {
@@ -53,7 +53,7 @@ class App extends Component {
     const isNotId = item => item.objectID !== id;
     const updatedHits = hits.filter(isNotId);
     this.setState({
-      results: { ...results, [searchKey]: { hits: updatedHits, page } },
+      results: { ...results, [searchKey]: { hits: updatedHits, page } }
     });
   }
   onSearchChange(event) {
@@ -132,13 +132,13 @@ const Table = ({ list, onDismiss }) => (
   <div className="table">
     {list.map(item => (
       <div key={item.objectID} className="table-row">
-        <span style={{ width: '40%' }}>
+        <span style={{ width: "40%" }}>
           <a href={item.url}>{item.title}</a>
         </span>
-        <span style={{ width: '30%' }}>{item.author}</span>
-        <span style={{ width: '10%' }}>{item.num_comments}</span>
-        <span style={{ width: '10%' }}>{item.points}</span>
-        <span style={{ width: '10%' }}>
+        <span style={{ width: "30%" }}>{item.author}</span>
+        <span style={{ width: "10%" }}>{item.num_comments}</span>
+        <span style={{ width: "10%" }}>{item.points}</span>
+        <span style={{ width: "10%" }}>
           <Button
             onClick={() => onDismiss(item.objectID)}
             className="button-inline"
@@ -151,10 +151,12 @@ const Table = ({ list, onDismiss }) => (
   </div>
 );
 
-const Button = ({ onClick, className = '', children }) => (
+const Button = ({ onClick, className = "", children }) => (
   <button onClick={onClick} className={className} type="button">
     {children}
   </button>
 );
 
 export default App;
+
+export { Button, Search, Table };
