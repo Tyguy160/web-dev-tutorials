@@ -32,11 +32,16 @@ describe("App", () => {
 describe("Button", () => {
   it("renders without crashing", () => {
     const div = document.createElement("div");
-    ReactDOM.render(<Button>More</Button>, div);
+    ReactDOM.render(
+      <Button onClick={() => console.log("Clicked button")}>More</Button>,
+      div
+    );
     ReactDOM.unmountComponentAtNode(div);
   });
   test("has a valid snapshot", () => {
-    const component = renderer.create(<Button>More</Button>);
+    const component = renderer.create(
+      <Button onClick={() => console.log("Clicked button")}>More</Button>
+    );
     const tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });
