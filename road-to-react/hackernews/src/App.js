@@ -23,7 +23,8 @@ class App extends Component {
       results: null,
       searchKey: "",
       searchTerm: DEFAULT_QUERY,
-      error: null
+      error: null,
+      isLoading: false
     };
     this.needstoSearchTopStories = this.needstoSearchTopStories.bind(this);
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
@@ -44,7 +45,8 @@ class App extends Component {
     this.setState({
       results: {
         ...results,
-        [searchKey]: { hits: updatedHits, page }
+        [searchKey]: { hits: updatedHits, page },
+        isLoading: false
       }
     });
   }
@@ -69,6 +71,7 @@ class App extends Component {
     event.preventDefault();
   }
   fetchSearchTopStories(searchTerm, page = 0) {
+    this.setState({ isLoading: true });
     axios(
       `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`
     )
@@ -86,7 +89,7 @@ class App extends Component {
     this._isMounted = false;
   }
   render() {
-    const { searchTerm, results, searchKey, error } = this.state;
+    const { searchTerm, results, searchKey, error, isLoading } = this.state;
     const page =
       (results && results[searchKey] && results[searchKey].page) || 0;
     const list =
@@ -103,31 +106,45 @@ class App extends Component {
           </Search>
           {error ? (
             <div className="interactions">
-              <p>Something went wrong...</p>
+              <ButtonWithLoading
+                isLoading={isLoading}
+                onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
+              >
+                More
+              </ButtonWithLoading>
             </div>
           ) : (
             <Table list={list} onDismiss={this.onDismiss} />
           )}
-        </div>
-        <div className="interactions">
-          <Button
-            onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
-          >
-            More
-          </Button>
         </div>
       </div>
     );
   }
 }
 
-const Search = ({ value, onChange, onSubmit, children }) => (
-  <form onSubmit={onSubmit}>
-    {children}
-    <input type="text" value={value} onChange={onChange} />
-    <button type="submit">{children}</button>
-  </form>
-);
+class Search extends Component {
+  componentDidMount() {
+    if (this.input) {
+      this.input.focus();
+    }
+  }
+
+  render() {
+    const { value, onChange, onSubmit, children } = this.props;
+    return (
+      <form onSubmit={onSubmit}>
+        {children}
+        <input
+          type="text"
+          value={value}
+          onChange={onChange}
+          ref={el => (this.input = el)}
+        />
+        <button type="submit">{children}</button>
+      </form>
+    );
+  }
+}
 
 const Table = ({ list, onDismiss }) => (
   <div className="table">
@@ -157,6 +174,16 @@ const Button = ({ onClick, className, children }) => (
     {children}
   </button>
 );
+
+const Loading = () => {
+  return <div>Loading...</div>;
+};
+
+const withLoading = Component => ({ isLoading, ...rest }) => {
+  isLoading ? <Loading /> : <Component {...rest} />;
+};
+
+const ButtonWithLoading = withLoading(Button);
 
 Button.defaultProps = {
   className: ""
